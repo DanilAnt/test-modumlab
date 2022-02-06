@@ -91,7 +91,7 @@ export default {
       history.pushState(
         {},
         "",
-        "books?categories=" +
+        "?categories=" +
           this.selectedTags
             .map((t) => {
               return t.id;
@@ -145,8 +145,8 @@ export default {
       }
     },
     getHystoryConfigs() {
-      // let url = decodeURI(window.location.href);
-      const searchString = new URLSearchParams(window.location.search);
+      try{
+const searchString = new URLSearchParams(window.location.search);
       const search = searchString.get("search");
       const categories = searchString.get("categories").split(",");
       // console.log(search, categories);
@@ -156,6 +156,8 @@ export default {
           return +c === t.id;
         });
       });
+      }catch{return true}
+      
     },
   },
   watch: {
