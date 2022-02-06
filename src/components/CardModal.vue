@@ -122,6 +122,7 @@ export default {
       text-align: justify;
       padding: 0 3px;
       line-height: 1.5;
+      word-break: break-word;
     }
     .cardModal__author {
       padding-bottom: 25px;

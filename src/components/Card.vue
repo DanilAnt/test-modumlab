@@ -105,6 +105,7 @@ export default {
     border: 2px solid rgb(216, 164, 31);
     padding: 15px 12px;
     display: flex;
+    width: 100%;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
@@ -119,6 +120,7 @@ export default {
     margin-bottom: 15px;
     text-align: justify;
     padding: 0 3px;
+   word-break: break-word;
   }
 }
 </style>

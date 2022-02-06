@@ -33,7 +33,7 @@ export default createStore({
 
   actions: {
     GET_TAGS: async ({ commit, dispatch, state }) => {
-      if(state.isCooledDown){
+      if (state.isCooledDown) {
 
         let response = await fetch(baseUrl + '/book/categories', {
           method: 'POST',
@@ -49,60 +49,23 @@ export default createStore({
         } else {
           alert("Ошибка HTTP: " + response.status);
         }
-  
-        
+
+
         commit('setIsCooledDown', false);
-        setTimeout(()=>{
+        setTimeout(() => {
           commit('setIsCooledDown', true);
         }, fetchCooldownTime)
-      }else{
+      } else {
         await sleep(50);
         dispatch('GET_TAGS')
       }
-      
+
 
     },
 
-    GET_CARDS: async ({ commit, dispatch, state}, data) => {
-      if(state.isCooledDown){
+    GET_CARDS: async ({ commit, dispatch, state }, data) => {
+      if (state.isCooledDown) {
 
-      let response = await fetch(baseUrl + '/book/list',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Host': 'webdev.modumlab.com'
-          },
-          body: JSON.stringify(data)
-        });
-      if (response.ok) {
-        let json = await response.json();
-        // console.log('cards', json);
-        commit('setCards', [...json.data.list]);
-        commit('setPage', json.data.page);
-        commit('setExistNextPage', json.data.next);
-      } else {
-        // console.log(); ("Ошибка HTTP: " + response.status);
-        commit('setCards', []);
-        commit('setPage', 1);
-        commit('setExistNextPage', false);
-      }
-
-      commit('setIsCooledDown', false);
-      setTimeout(()=>{
-        commit('setIsCooledDown', true);
-      }, fetchCooldownTime)
-    }else{
-      await sleep(50);
-      dispatch('GET_CARDS', data)
-    }
-    },
-    LOAD_MORE_CARDS: async ({ commit, dispatch, state }, payload) => {
-      if(state.isCooledDown){
-
-      if (state.existNextPage) {
-        let data = payload;
-        data.page = state.page + 1;
         let response = await fetch(baseUrl + '/book/list',
           {
             method: 'POST',
@@ -115,22 +78,67 @@ export default createStore({
         if (response.ok) {
           let json = await response.json();
           // console.log('cards', json);
-          commit('addCards', [...json.data.list]);
+          commit('setCards', [...json.data.list]);
           commit('setPage', json.data.page);
           commit('setExistNextPage', json.data.next);
         } else {
-          alert("Ошибка HTTP: " + response.status);
+          // console.log(); ("Ошибка HTTP: " + response.status);
+          commit('setCards', []);
+          commit('setPage', 1);
+          commit('setExistNextPage', false);
         }
-      }
 
-      commit('setIsCooledDown', false);
-      setTimeout(()=>{
-        commit('setIsCooledDown', true);
-      }, fetchCooldownTime)
-    }else{
-      await sleep(50);
-      dispatch('LOAD_MORE_CARDS', payload)
-    }
+        commit('setIsCooledDown', false);
+        setTimeout(() => {
+          commit('setIsCooledDown', true);
+        }, fetchCooldownTime)
+      } else {
+        await sleep(50);
+        dispatch('GET_CARDS', data)
+      }
+    },
+    LOAD_MORE_CARDS: async ({ commit, dispatch, state }, payload) => {
+      // console.log(1);
+      if (state.isCooledDown) {
+
+        if (state.existNextPage) {
+          let data = payload;
+          data.page = state.page + 1;
+          let response = await fetch(baseUrl + '/book/list',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Host': 'webdev.modumlab.com'
+              },
+              body: JSON.stringify(data)
+            });
+          if (response.ok) {
+            let json = await response.json();
+            // console.log('cards', json);
+            // console.log(state.page, json.data.page);
+            if(state.page !== json.data.page){
+              commit('addCards', [...json.data.list]);
+              commit('setPage', json.data.page);
+              commit('setExistNextPage', json.data.next);
+            }
+          
+          } else {
+            console.log("Ошибка HTTP: " + response.status);
+            commit('setCards', []);
+            commit('setPage', 1);
+            commit('setExistNextPage', false);
+          }
+        }
+
+        commit('setIsCooledDown', false);
+        setTimeout(() => {
+          commit('setIsCooledDown', true);
+        }, fetchCooldownTime)
+      } else {
+        await sleep(50);
+        dispatch('LOAD_MORE_CARDS', payload)
+      }
 
     }
   },
@@ -143,6 +151,7 @@ export default createStore({
     },
     addCards(state, payload) {
       state.cards = [...state.cards, ...payload];
+      // console.log(123, state.cards);
     },
     setPage(state, payload) {
       state.page = payload;

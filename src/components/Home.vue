@@ -22,9 +22,9 @@
 
     <div class="home__cards">
       <Card
-        v-for="(card, index) in computedCards.slice(0, this.showCount)"
+        v-for="(card) in computedCards.slice(0, this.showCount)"
         :card="card"
-        :key="index"
+        :key="card.id"
         :search="filterInput.trim().toLowerCase()"
       />
     </div>
@@ -82,6 +82,7 @@ export default {
             .includes(this.filterInput.trim().toLowerCase())
         );
       });
+  
       // console.log(cards.slice(0,this.showCount), this.showCount,222);
       return cards;
     },
@@ -119,6 +120,8 @@ export default {
         this.selectedTags = [...this.selectedTags, tag];
       }
       this.pushHystory();
+
+
     },
     loadMoreButtonHandler() {
       this.showCount = this.showCount + 10;
@@ -170,6 +173,7 @@ const searchString = new URLSearchParams(window.location.search);
       };
       this.$store.dispatch("GET_CARDS", data);
     },
+   
   },
 
   async mounted() {
